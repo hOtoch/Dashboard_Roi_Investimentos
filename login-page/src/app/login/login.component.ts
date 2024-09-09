@@ -9,17 +9,19 @@ import { LoginResponse } from '../models/login-response.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements AfterViewInit{
+export class LoginComponent implements  AfterViewInit{
   email: string = '';
   password: string = '';
   errorMessage: string = '';
+
 
   constructor(private authService: AuthService, private router: Router) { }
 
   @ViewChild('videoBackground', { static: false }) videoRef?: ElementRef<HTMLVideoElement>;
 
+
   ngAfterViewInit(): void {
-    // Aguarda a primeira interação do usuário para iniciar o vídeo
+
     document.body.addEventListener('click', () => {
       this.playVideo();
     }, { once: true }); // Adiciona o evento apenas uma vez
@@ -45,14 +47,11 @@ export class LoginComponent implements AfterViewInit{
 
     this.authService.login(loginData).subscribe(
       (response: LoginResponse) => {  
-
-        console.log(this.authService.getToken())
-        console.log(this.authService.getUserId())
-        // this.router.navigate(['/dashboard']); 
+        const token = this.authService.getToken();  // Obtém o token do login
         this.errorMessage = '';
+        window.location.href = `http://localhost:8501?token=${token}`;
       },
       (error) => {
-        console.error('Erro ao autenticar', error);
         this.errorMessage = 'Dados de login inválidos';
       }
     );

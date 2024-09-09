@@ -15,11 +15,11 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(data: { email: string; senha: string }): Observable<LoginResponse> {
+    console.log(data)
     return this.http.post<LoginResponse>(this.apiUrl, data).pipe(
       tap((response: LoginResponse) => {
         // Armazenar o token e o ID do usuário no localStorage após o login bem-sucedido
         localStorage.setItem(this.tokenKey, response.access_token);
-        localStorage.setItem(this.userIdKey, response.user_id.toString());
       })
     );
   }
@@ -27,11 +27,6 @@ export class AuthService {
   // Método para obter o token do localStorage
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
-  }
-
-  // Método para obter o ID do usuário do localStorage
-  getUserId(): string | null {
-    return localStorage.getItem(this.userIdKey);
   }
 
   // Método para remover o token e o ID do usuário do localStorage (logout)

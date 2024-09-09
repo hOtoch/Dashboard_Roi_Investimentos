@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token
 from ..models import Usuario, db
@@ -17,10 +17,12 @@ def login():
     if user and check_password_hash(user.senha_hash, dados.get('senha')):
         # gerar um token de acesso JWT com o ID do usuario
         access_token = create_access_token(identity=user.id)
-        return jsonify({
-            'access_token': access_token,
-            "user_id": user.id
-            }), 200
+        response = make_response(jsonify({
+            'message': 'Login bem-sucedido',
+            'access_token': access_token
+        }))
+        
+        return response
     
     else:
         return jsonify({'erro':'Credenciais inválidas'}), 401
