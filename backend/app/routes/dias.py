@@ -35,15 +35,23 @@ def editar_dia(id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
+
 @dias_bp.route('/dias/<int:id>', methods=['GET'])
 @jwt_required()  
-def acessar_dia(id):
-    dia = Dia.query.get_or_404(id)
+def acessar_dias_mes(id):
+    
+    try:
+        dias = Dia.query.filter_by(mes_id=id).all()
+        
+        dias_lista = [{
+            'id': dia.id,
+            'mes_id': dia.mes_id,
+            'juros': dia.juros,
+            'alcancado_dia': dia.alcancado_dia
+        } for dia in dias]
 
-    return jsonify({
-        'id': dia.id,
-        'mes_id': dia.mes_id,
-        'juros': dia.juros,
-        'alcancado_dia': dia.alcancado_dia
-    }), 200
+        return jsonify(dias_lista), 200
+    
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
 

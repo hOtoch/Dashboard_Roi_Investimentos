@@ -7,7 +7,7 @@ login_bp = Blueprint('login',__name__)
 
 @login_bp.route('/login', methods =['POST'])
 def login():
-    dados = request.json
+    dados = request.get_json()
 
     if not dados.get('email') or not dados.get('senha'):
         return jsonify({'erro':'Email e senha são obrigatórios'}),400
@@ -17,7 +17,10 @@ def login():
     if user and check_password_hash(user.senha_hash, dados.get('senha')):
         # gerar um token de acesso JWT com o ID do usuario
         access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token), 200
+        return jsonify({
+            'access_token': access_token,
+            "user_id": user.id
+            }), 200
     
     else:
         return jsonify({'erro':'Credenciais inválidas'}), 401
