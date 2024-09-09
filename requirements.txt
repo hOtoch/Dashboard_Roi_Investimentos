@@ -3,3 +3,4 @@ streamlit
 python-dotenv
 Flask-SQLAlchemy
 Werkzeug
+Flask-JWT-Extended
