@@ -76,7 +76,7 @@ def criar_conta():
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
-@contas_bp.route('/contas/', methods=['GET'])
+@contas_bp.route('/contas', methods=['GET'])
 @jwt_required()
 def listar_minhas_contas():
     

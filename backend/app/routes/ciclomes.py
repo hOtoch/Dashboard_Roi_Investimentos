@@ -241,4 +241,24 @@ def deletar_ciclomes(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
+    
+@ciclomes_bp.route('/ciclomes', methods=['GET'])
+@jwt_required()
+def get_all_ciclomes():
+    ciclomeses = CicloMes.query.all()
+    
+    return jsonify([{
+        'id': ciclomes.id,
+        'nome': ciclomes.nome,
+        'ano': ciclomes.ano,
+        'investimento': ciclomes.investimento,
+        'dias': ciclomes.dias,
+        'shark': ciclomes.shark,
+        'alcancado': ciclomes.alcancado,
+        'projecao': ciclomes.projecao,
+        'porcentagem_alcancado': ciclomes.porcentagem_alcancado,
+        'valor_liquido': ciclomes.valor_liquido,
+        'atual' : ciclomes.atual
+    } for ciclomes in ciclomeses]),200
+    
         
