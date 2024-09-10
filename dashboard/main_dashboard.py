@@ -47,7 +47,7 @@ def main():
         if payload:
             try:
                 dados_user = api.get_user(token, user_id)
-                st.success(f"Bem-vindo, {dados_user['nome']}!")
+                st.write(f"Bem-vindo, {dados_user['nome']}!")
                 
             except Exception as e:
                 st.error("Erro ao processar os dados do usuário.")
@@ -60,6 +60,7 @@ def main():
         st.error("Acesso não autorizado. Por favor, faça login.")
 
 if __name__ == "__main__":
+   
     main()
     
     
