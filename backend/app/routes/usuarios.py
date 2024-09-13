@@ -27,13 +27,20 @@ def listar_usuarios():
     
 
 @usuarios_bp.route('/usuarios', methods=['POST'])
+@jwt_required()
 def criar_usuario():
+    usuario_id = get_jwt_identity()
+    usuario = Usuario.query.get(usuario_id)
+    
+    if usuario.tipo_usuario != 'admin':
+        return jsonify({'erro': 'Você não tem permissão para acessar esta rota'}),403
+    
     dados = request.json
     if not dados.get('nome') or not dados.get('email') or not dados.get('senha') or not dados.get('tipo_usuario'):
-        return jsonify({'erro': 'Dados inválidos'}), 400
+        return jsonify({'erro': 'Dados inválidos', 'status_code': 400}), 400
     
     if Usuario.query.filter_by(email=dados.get('email')).first():
-        return jsonify({'erro': 'E-mail já cadastrado'}), 400
+        return jsonify({'erro': 'E-mail já cadastrado','status_code': 400}), 400
     
     try:
         senha = generate_password_hash(str(dados.get('senha')))
@@ -48,13 +55,14 @@ def criar_usuario():
         
         return jsonify({
             "message": "Usuário criado com sucesso",
+            "status_code": 201,
             "usuario": {
                 "id": novo_usuario.id,
                 "nome": novo_usuario.nome,
                 "email": novo_usuario.email,
                 "tipo_usuario": novo_usuario.tipo_usuario
             }
-        }), 201
+        }),201
         
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
@@ -110,7 +118,7 @@ def atualizar_usuario(id):
         'nome': usuario.nome,
         'email': usuario.email,
         'tipo_usuario': usuario.tipo_usuario
-    })
+    }), 200
 
     
 @usuarios_bp.route('/usuarios/<int:id>', methods=['DELETE'])

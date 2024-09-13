@@ -11,6 +11,7 @@ class Usuario(db.Model):
 class Conta(db.Model):
     __tablename__ = 'contas'
     id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     deposito_inicial = db.Column(db.Float, nullable=False)
     saldo_atual = db.Column(db.Float, nullable=False)

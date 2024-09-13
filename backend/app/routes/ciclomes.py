@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..models import CicloMes,Usuario,Dia, db
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import datetime
 from ..routes.contas import atualizar_todas_contas
 from sqlalchemy import func
 
@@ -19,7 +18,11 @@ def soma_juros_dias(ciclomes):
 def aplicar_regras_negocio(ciclomes):
     ciclomes.alcancado = soma_alcancado_dias(ciclomes)
     ciclomes.projecao = soma_juros_dias(ciclomes)
-    ciclomes.porcentagem_alcancado = ciclomes.alcancado / ciclomes.projecao 
+    
+    if ciclomes.projecao and ciclomes.projecao != 0:
+        ciclomes.porcentagem_alcancado = ciclomes.alcancado / ciclomes.projecao
+    else:
+        ciclomes.porcentagem_alcancado = 0 
     
 
 def atualizar_ciclomes(ciclomes_id):
@@ -80,8 +83,6 @@ def criar_ciclomes():
             valor_liquido=dados['valor_liquido']
         )
         
-        
-        # Adicionar e salvar no banco de dados
         db.session.add(novo_ciclomes)
         db.session.commit()
         
@@ -166,10 +167,6 @@ def editar_ciclomes(id):
         ciclomes.shark = dados['shark']
     if 'alcancado' in dados:
         ciclomes.alcancado = dados['alcancado']
-    if 'projecao' in dados:
-        ciclomes.projecao = dados['projecao']
-    if 'porcentagem_alcancado' in dados:
-        ciclomes.porcentagem_alcancado = dados['porcentagem_alcancado']
     if 'valor_liquido' in dados:
         ciclomes.valor_liquido = dados['valor_liquido']
         

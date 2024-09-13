@@ -52,12 +52,13 @@ def criar_conta():
     dados = request.json
 
     # Validação básica dos campos obrigatórios
-    if not dados.get('deposito_inicial') or not dados.get('saldo_atual') or not dados.get('plano') or not dados.get('meses') or not dados.get('comissao') :
+    if not dados.get('deposito_inicial') or not dados.get('saldo_atual') or not dados.get('plano') or not dados.get('meses') or not dados.get('comissao') or not dados.get('nome') or not dados.get('usuario_id'):
         return jsonify({'erro': 'Necessário dados obrigatórios'}), 400
     
     try:
         nova_conta = Conta(
-            usuario_id= usuario_logado_id,
+            usuario_id= dados['usuario_id'],
+            nome = dados['nome'],
             deposito_inicial=dados['deposito_inicial'],
             saldo_atual=dados['saldo_atual'],
             plano=dados['plano'],
@@ -76,7 +77,7 @@ def criar_conta():
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
-@contas_bp.route('/contas', methods=['GET'])
+@contas_bp.route('/contas/user', methods=['GET'])
 @jwt_required()
 def listar_minhas_contas():
     
@@ -86,6 +87,30 @@ def listar_minhas_contas():
     
     return jsonify([{
         'id': conta.id,
+        'nome': conta.nome,
+        'usuario_id': conta.usuario_id,
+        'deposito_inicial': conta.deposito_inicial,
+        'saldo_atual': conta.saldo_atual,
+        'multiplicador': conta.multiplicador,
+        'plano': conta.plano,
+        'meses': conta.meses,
+        'liquido': conta.liquido,
+        'comissao': conta.comissao,
+        'operacoes_finalizadas': conta.operacoes_finalizadas,
+        'margem_lucro': conta.margem_lucro,
+        'comissao_fundo': conta.comissao_fundo,
+        'inicio': conta.inicio,
+        'saques': conta.saques
+    } for conta in contas]), 200
+    
+@contas_bp.route('/contas', methods=['GET'])
+@jwt_required()
+def get_all_contas(): 
+    contas = Conta.query.all()
+    
+    return jsonify([{
+        'id': conta.id,
+        'nome': conta.nome,
         'usuario_id': conta.usuario_id,
         'deposito_inicial': conta.deposito_inicial,
         'saldo_atual': conta.saldo_atual,
@@ -113,6 +138,7 @@ def get_conta(id):
     
     return jsonify([{
         'id': conta.id,
+        'nome': conta.nome,
         'usuario_id': conta.usuario_id,
         'deposito_inicial': conta.deposito_inicial,
         'saldo_atual': conta.saldo_atual,
@@ -157,6 +183,8 @@ def editar_conta(id):
             conta.comissao = dados['comissao']
         if 'saques' in dados:
             conta.saques = dados['saques']
+        if 'nome' in dados:
+            conta.nome = dados['nome']
       
         aplicar_regras_negocio(conta)
         db.session.commit()
