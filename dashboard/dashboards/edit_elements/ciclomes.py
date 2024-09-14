@@ -62,7 +62,7 @@ def edit_ciclomes_page(token, dados_ciclomes):
     df_ciclomes = pd.DataFrame(dados_ciclomes)
 
     nomes_ciclomes = df_ciclomes['nome'].values
-    ciclomes_selecionado_nome = st.selectbox("Selecione um CicloMes para editar", options=nomes_ciclomes)
+    ciclomes_selecionado_nome = st.selectbox("Selecione um Mês para editar", options=nomes_ciclomes)
 
     ciclomes_selecionado = df_ciclomes[df_ciclomes['nome'] == ciclomes_selecionado_nome].iloc[0]
 
@@ -84,18 +84,32 @@ def edit_ciclomes_page(token, dados_ciclomes):
             formulario_edit_dia(token, df_dias[df_dias['dia_num'] == dia_selecionado].iloc[0])
             
             st.divider()
+            
+        if ciclomes_selecionado['atual'] == False:
+            ativar_mes_button = st.button("Ativar Mês")
+            
+            if ativar_mes_button:
+                resposta = api.ativar_ciclomes(token, ciclomes_selecionado['id'])
+                
+                if "erro" not in resposta:
+                    st.success("Mês ativado com sucesso!")
+                    dados_ciclomes = api.get_ciclomeses(token)
+                    df_ciclomes = pd.DataFrame(dados_ciclomes)
+                    st.rerun()
+                else:
+                    st.error(f"Erro: {resposta['erro']}")
 
         if 'confirmando_remocao' not in st.session_state:
             st.session_state['confirmando_remocao'] = False
 
         if not st.session_state['confirmando_remocao']:
-            remove_ciclomes_button = st.button("Remover CicloMes")
+            remove_ciclomes_button = st.button("Remover Mes")
 
             if remove_ciclomes_button:
                 st.session_state['confirmando_remocao'] = True
 
         if st.session_state['confirmando_remocao']:
-            st.warning(f"Tem certeza que deseja remover este CicloMes?", icon="⚠️")
+            st.warning(f"Tem certeza que deseja remover este Mes?", icon="⚠️")
             col1, col2 = st.columns(2)
 
             with col1:

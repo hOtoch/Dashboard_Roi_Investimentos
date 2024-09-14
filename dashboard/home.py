@@ -9,8 +9,15 @@ import jwt
 from dotenv import load_dotenv
 from dashboards.dashboard_user import dashboard_user
 from dashboards.dashboard_admin import dashboard_admin
+import base64
 
 load_dotenv()
+
+@st.cache_data
+def get_img_as_base64(file):
+    with open(file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
 
 SECRET_KEY = os.getenv('JWT_SECRET_KEY')
@@ -34,11 +41,30 @@ def side_bar(token,dados_user):
     st.sidebar.write(":material/account_circle:", dados_user['nome'])
                 
     st.sidebar.title("Menu")
-    dashboard_selecionado = st.sidebar.selectbox("Escolha um dashboard",
-                                                 ("🏠 Dashboard Inicial","📊 Dashboard do Usuário","🛠 Dasboard do Administrador"),
-                                                 key="sidebar_dashboard_home_selectbox")
+    
+    if st.session_state['admin']:
+        dashboard_selecionado = st.sidebar.selectbox("Escolha um dashboard",
+                                                    ("🏠 Dashboard Inicial","📊 Dashboard do Usuário","🛠 Dasboard do Administrador"),
+                                                    key="sidebar_dashboard_home_selectbox")
+        
+    else:
+        dashboard_selecionado = st.sidebar.selectbox("Escolha um dashboard",
+                                                    ("🏠 Dashboard Inicial","📊 Dashboard do Usuário"),
+                                                    key="sidebar_dashboard_home_selectbox")
     
     st.session_state['dashboard_selecionado'] = dashboard_selecionado
+    
+    
+    
+    image_position = """
+                    <style>
+                        [data-testid="stImageContainer"]{
+                            width: 20px;
+                            
+                        }
+                    </style>
+    """
+    st.markdown(image_position, unsafe_allow_html=True)
     
     return dashboard_selecionado
    
@@ -149,33 +175,81 @@ def dashboard_padrao(token, dados_ciclomeses):
 
 def main():
     token = get_params()
-    
-    image_path = os.path.join(os.getcwd(), "teste.png")
-    # Background image CSS
+ 
     # page_bg_img = '''
     # <style>
     # [data-testid="stAppViewContainer"]{
-    # background-color: #03fce8;
+    #     background-image: url("https://img.freepik.com/free-vector/gradient-abstract-wireframe-background_23-2149009903.jpg?w=740&t=st=1726273248~exp=1726273848~hmac=05943a7e17e84f68d46a9542b029630a1d7080cb67fcba0717d664d9e77a0a59");
+    #     background-size: cover; 
+    #     background-position: center; 
+    #     background-repeat: no-repeat; 
+    #     background-attachment: fixed; 
+    # }
+    # [data-testid="stHeader"]{
+    #     background-color: rgba(0,0,0,0);
+    # }
+    
+    # .element-container st-emotion-cache-c59eu e1f1d6gn4{
+    #     background-color: rgba(0,0,0,0);
     # }
     
     # </style>
     # '''
-    # st.markdown(page_bg_img, unsafe_allow_html=True)
+    st.set_page_config(layout="wide")
+    video_html = """
+    
+        <video autoplay muted loop id="myVideo">
+		  <source src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4">
+		  Your browser does not support HTML5 video.
+		</video>
+		<style>
+  
+        [data-testid="stHeader"]{
+            background-color: rgba(0,0,0,0);
+        }
+        [data-testid="stSidebarContent"]{
+            background-color: #1e2024
+        }
+
+		#myVideo {
+		  position: fixed;
+		  right: 0;
+		  bottom: -50px;
+		  min-width: 100%; 
+		  min-height: 100%;
+		}
+    
+
+		</style>	
+		
+        """
+
+    st.markdown(video_html, unsafe_allow_html=True)
     
     if token:
         payload = verificar_token(token)
         user_id = payload['sub']
         if payload:
             try:
-                dados_user = api.get_user(token, user_id)             
+                dados_user = api.get_user(token, user_id)      
+                       
             except Exception as e:
                 st.error("Erro ao processar os dados do usuário.")
                 st.error(str(e))
                 
             dados_ciclomeses = api.get_ciclomeses(token)
+            dados_contas = api.get_contas(token)
             
+            st.sidebar.image("assets/logo2.png", use_column_width='always', width=250)
             
             st.header(f"Bem-vindo, {dados_user['nome']}!")
+            
+            if not 'admin' in st.session_state:
+                st.session_state['admin'] = False
+            
+            if dados_user['tipo_usuario'] == "admin":
+                st.session_state['admin'] = True
+            
             dashboard_selecionado = side_bar(token, dados_user)
             
             if dashboard_selecionado == "🏠 Dashboard Inicial":
@@ -183,10 +257,8 @@ def main():
             elif dashboard_selecionado == "📊 Dashboard do Usuário":
                 dashboard_user(token)
             elif dashboard_selecionado == "🛠 Dasboard do Administrador":
-                dados_usuario = api.getall_users(token)
-                dados_ciclomeses = api.get_ciclomeses(token)
-                dados_contas = api.get_contas(token)
-                dashboard_admin(token, dados_usuario, dados_ciclomeses, dados_contas)
+                dados_usuarios = api.getall_users(token)
+                dashboard_admin(token, dados_usuarios, dados_ciclomeses, dados_contas)
             
         else:
             st.error("Autenticação falhou. Faça login novamente.")

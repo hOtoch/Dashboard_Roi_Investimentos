@@ -47,7 +47,6 @@ def create_user_page(token, dados_usuario):
         
     if resposta_modal:
         st.success("Usuário criado com sucesso!")
-        st.rerun()
         df_usuarios = df_usuarios_novo
        
        

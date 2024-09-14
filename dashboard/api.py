@@ -119,7 +119,20 @@ def create_conta(token, conta_data):
     except Exception as err:
         return {"erro": f"Other error occurred: {err}"}
     
+def listar_contas_user_admin(token, user_id):
+    headers = {'Authorization':f'Bearer {token}'}
     
+    try:
+        response = requests.get(f"{BACKEND_URL}/contas/user/{user_id}", headers=headers)
+        response.raise_for_status()
+        return response.json()
+    
+    except requests.exceptions.HTTPError as http_err:
+        return {"erro": f"HTTP error occurred: {http_err}"}
+    except Exception as err:
+        return {"erro": f"Other error occurred: {err}"}
+
+
 def listar_contas_user(token):
     headers = {'Authorization':f'Bearer {token}'}
     
@@ -205,6 +218,19 @@ def delete_ciclomes(token, ciclomes_id):
     
     try:
         response = requests.delete(f"{BACKEND_URL}/ciclomes/{ciclomes_id}", headers=headers)
+        response.raise_for_status()
+        return response.json()
+    
+    except requests.exceptions.HTTPError as http_err:
+        return {"erro": f"HTTP error occurred: {http_err}"}
+    except Exception as err:
+        return {"erro": f"Other error occurred: {err}"}
+    
+def ativar_ciclomes(token, ciclomes_id):
+    headers = {'Authorization':f'Bearer {token}'}
+    
+    try:
+        response = requests.put(f"{BACKEND_URL}/ciclomes/ativar/{ciclomes_id}", headers=headers)
         response.raise_for_status()
         return response.json()
     

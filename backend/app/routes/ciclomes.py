@@ -182,7 +182,7 @@ def editar_ciclomes(id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
     
-@ciclomes_bp.route('/ciclomes/<int:id>/ativar', methods=['PUT'])
+@ciclomes_bp.route('/ciclomes/ativar/<int:id>', methods=['PUT'])
 @jwt_required()
 def ativar_ciclomes(id):
     usuario_id_logado = get_jwt_identity()

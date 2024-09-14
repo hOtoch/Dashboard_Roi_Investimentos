@@ -5,9 +5,14 @@ import pandas as pd
 from dashboards.create_elements.user import create_user_page
 from dashboards.create_elements.ciclomes import create_ciclomes_page
 from dashboards.create_elements.conta import create_conta_page
+
 from dashboards.edit_elements.user import edit_user_page
 from dashboards.edit_elements.ciclomes import edit_ciclomes_page
 from dashboards.edit_elements.conta import edit_conta_page
+
+from dashboards.paineis.user import exibir_tabela_usuarios
+from dashboards.paineis.ciclomes import exibir_tabela_ciclomes
+from dashboards.paineis.conta import exibir_tabela_contas
 
 def control_session_state_admin(create_user_button, create_mes_button, create_conta_button, painel_user_button, painel_ciclomes_button, painel_conta_button, edit_user_button, edit_ciclomes_button, edit_conta_button):
     # Verifica se o estado já foi inicializado, se não, inicializa
@@ -100,7 +105,7 @@ def side_bar_admin(token):
     
     control_session_state_admin(create_user_button, create_mes_button, create_conta_button, painel_user_button, painel_ciclomes_button, painel_conta_button, edit_user_button, edit_ciclomes_button, edit_conta_button)
     # st.sidebar.write(st.session_state)
-    st.sidebar.image("assets/logo.png", use_column_width='always',width=250)
+    
     
 
 
@@ -126,8 +131,16 @@ def dashboard_admin(token, dados_usuario, dados_ciclomeses, dados_contas):
     elif 'edit_conta' in st.session_state and st.session_state['edit_conta']:
         edit_conta_page(token, dados_contas)
         
-    elif 'painel' in st.session_state and st.session_state['painel']:
+    elif 'painel_user' in st.session_state and st.session_state['painel_user']:
+        exibir_tabela_usuarios(token, dados_usuario)
+    
+    elif 'painel_ciclomes' in st.session_state and st.session_state['painel_ciclomes']:
+        exibir_tabela_ciclomes(token, dados_ciclomeses)
+    
+    elif 'painel_conta' in st.session_state and st.session_state['painel_conta']:
+        exibir_tabela_contas(token, dados_contas, dados_usuario)
         
-        st.subheader('Painel')
+    elif 'painel' in st.session_state and st.session_state['painel']:
+        st.info("Selecione uma opção no menu lateral")
     
     

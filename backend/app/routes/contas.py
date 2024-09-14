@@ -103,6 +103,36 @@ def listar_minhas_contas():
         'saques': conta.saques
     } for conta in contas]), 200
     
+@contas_bp.route('/contas/user/<int:id>', methods=['GET'])
+@jwt_required()
+def listar_contas_usuario(id):
+    
+    usuario_id_logado = get_jwt_identity()
+    usuario = Usuario.query.get(usuario_id_logado)
+    
+    if usuario.tipo_usuario != 'admin':
+        return jsonify({'erro': 'Apenas usuarios permitidos podem acessar todas as contas'})
+    
+    contas = Conta.query.filter_by(usuario_id=id).all()
+    
+    return jsonify([{
+        'id': conta.id,
+        'nome': conta.nome,
+        'usuario_id': conta.usuario_id,
+        'deposito_inicial': conta.deposito_inicial,
+        'saldo_atual': conta.saldo_atual,
+        'multiplicador': conta.multiplicador,
+        'plano': conta.plano,
+        'meses': conta.meses,
+        'liquido': conta.liquido,
+        'comissao': conta.comissao,
+        'operacoes_finalizadas': conta.operacoes_finalizadas,
+        'margem_lucro': conta.margem_lucro,
+        'comissao_fundo': conta.comissao_fundo,
+        'inicio': conta.inicio,
+        'saques': conta.saques
+    } for conta in contas]), 200
+    
 @contas_bp.route('/contas', methods=['GET'])
 @jwt_required()
 def get_all_contas(): 
