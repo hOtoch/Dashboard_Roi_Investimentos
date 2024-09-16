@@ -1,8 +1,22 @@
-from flask import Blueprint, request, jsonify, make_response
-from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token
+from flask import Blueprint, request, jsonify, make_response, Flask,url_for
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_jwt_extended import create_access_token, decode_token
 from ..models import Usuario, db
+import os
+from dotenv import load_dotenv
+from flask_mail import Mail, Message
+from datetime import timedelta
+from .. import mail
 
+
+def send_reset_email(to, reset_link):
+    msg = Message('Redefinição de Senha',
+                  recipients=[to],
+                  body=f'Clique no link para redefinir sua senha: {reset_link}',
+                  sender='otochdev@gmail.com')
+    mail.send(msg)
+    
+    
 login_bp = Blueprint('login',__name__)
 
 @login_bp.route('/login', methods =['POST'])
@@ -27,6 +41,71 @@ def login():
     else:
         return jsonify({'erro':'Credenciais inválidas'}), 401
     
+
+@login_bp.route('/verify_email', methods =['POST'])    
+def verify_email():
+    dados = request.get_json()
+    
+    user = Usuario.query.filter_by(email = dados.get('email')).first();
+    
+    if user:
+        return jsonify({'message':'Email encontrado'}), 200
+    else:
+        return jsonify({'erro':'Email não encontrado'}), 404
+    
+@login_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    dados = request.get_json()
+
+    # Verifique se o email foi enviado
+    if not dados.get('email'):
+        return jsonify({'erro': 'Email é obrigatório'}), 400
+
+    # Verifique se o usuário existe
+    user = Usuario.query.filter_by(email=dados.get('email')).first()
+
+    if user:
+        # Gera o token de redefinição de senha (JWT válido por 1 hora)
+        reset_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+
+        frontend_url = "http://localhost:4200/resetar-senha"  
+        reset_url = f"{frontend_url}/{reset_token}"
+
+        # Envia o email com o link de redefinição
+        send_reset_email(user.email, reset_url)
+
+        return jsonify({'message': 'Um email foi enviado com instruções para redefinir sua senha.'}), 200
+    else:
+        return jsonify({'erro': 'Email não encontrado'}), 404
+    
+@login_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        # Decodificar o token para obter o ID do usuário
+        decoded_token = decode_token(token)
+        user_id = decoded_token['sub']  # 'sub' é o campo que contém o ID do usuário no JWT
+    except:
+        return jsonify({'erro': 'Token inválido ou expirado'}), 400
+
+    if request.method == 'POST':
+        dados = request.get_json()
+
+        # Verifique se a nova senha foi enviada
+        if not dados.get('new_password'):
+            return jsonify({'erro': 'Nova senha é obrigatória'}), 400
+
+        # Atualize a senha do usuário no banco de dados
+        user = Usuario.query.get(user_id)
+        user.senha_hash = generate_password_hash(dados.get('new_password'))
+        db.session.commit()
+
+        return jsonify({'message': 'Senha redefinida com sucesso!'}), 200
+
+    # Se for uma requisição GET, você pode retornar uma mensagem ou renderizar um formulário (caso queira exibir uma página)
+    return jsonify({'message': 'Insira sua nova senha.'}), 200
+
+
+
     
 
     

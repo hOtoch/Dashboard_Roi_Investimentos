@@ -93,22 +93,14 @@ def dashboard_padrao(token, dados_ciclomeses):
 
     # Exibindo as métricas lado a lado
     with col1:
-        st.metric(label="Investimento", value=f"R${df_filtrado['investimento'].values[0]:,.2f}")
+        st.metric(label="Investimento", value=f"${df_filtrado['investimento'].values[0]:,.2f}")
+        st.metric(label="Alcançado", value=f"${df_filtrado['alcancado'].values[0]:,.2f}")
     with col2:
         st.metric(label="Dias", value=df_filtrado['dias'].values[0])
+        st.metric(label="Projeção", value=f"${df_filtrado['projecao'].values[0]:,.2f}")
     with col3:
         st.metric(label="Shark - Dia", value=f"{shark_porcentagem}%")
-        
-
-    col4,col5,col6 = st.columns([2,2,1])
-
-    porcentagem_alcancada = (df_filtrado['porcentagem_alcancado'].values[0]) * 100
-
-    with col4:
-        st.metric(label="Alcançado", value=f"R${df_filtrado['alcancado'].values[0]:,.2f}")
-    with col5:
-        st.metric(label="Projeção", value=f"R${df_filtrado['projecao'].values[0]:,.2f}")
-    with col6:
+        porcentagem_alcancada = (df_filtrado['porcentagem_alcancado'].values[0]) * 100
         st.metric(label="Porcentagem Alcançada", value=f"{porcentagem_alcancada}%")
         
     try:
@@ -121,7 +113,6 @@ def dashboard_padrao(token, dados_ciclomeses):
                 labels={"value": "Valores", "variable": "Métricas"},
                 title="Juros e Valor Alcançado por Dia")
 
-        # Exibindo o gráfico no Streamlit
         st.plotly_chart(fig)
     except Exception as e:
         st.error("O mês selecionado não possui dados dos dias relacionados a ele")
@@ -161,7 +152,7 @@ def dashboard_padrao(token, dados_ciclomeses):
         x=df_ciclomeses['mes_ano'],  # Eixo X com meses
         y=df_ciclomeses['valor_liquido'],  # Valores líquidos
         textposition="outside",
-        text=df_ciclomeses['valor_liquido'].map(lambda x: f"R${x:,.2f}"),
+        text=df_ciclomeses['valor_liquido'].map(lambda x: f"${x:,.2f}"),
         connector={"line":{"color":"rgb(63, 63, 63)"}},
     ))
 
@@ -175,31 +166,13 @@ def dashboard_padrao(token, dados_ciclomeses):
 
 def main():
     token = get_params()
- 
-    # page_bg_img = '''
-    # <style>
-    # [data-testid="stAppViewContainer"]{
-    #     background-image: url("https://img.freepik.com/free-vector/gradient-abstract-wireframe-background_23-2149009903.jpg?w=740&t=st=1726273248~exp=1726273848~hmac=05943a7e17e84f68d46a9542b029630a1d7080cb67fcba0717d664d9e77a0a59");
-    #     background-size: cover; 
-    #     background-position: center; 
-    #     background-repeat: no-repeat; 
-    #     background-attachment: fixed; 
-    # }
-    # [data-testid="stHeader"]{
-    #     background-color: rgba(0,0,0,0);
-    # }
-    
-    # .element-container st-emotion-cache-c59eu e1f1d6gn4{
-    #     background-color: rgba(0,0,0,0);
-    # }
-    
-    # </style>
-    # '''
+
     st.set_page_config(layout="wide")
     video_html = """
     
         <video autoplay muted loop id="myVideo">
-		  <source src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4">
+        
+		  <source src="https://www.youtube.com/embed/Ejirpx_qQtc">
 		  Your browser does not support HTML5 video.
 		</video>
 		<style>
@@ -208,7 +181,7 @@ def main():
             background-color: rgba(0,0,0,0);
         }
         [data-testid="stSidebarContent"]{
-            background-color: #1e2024
+            background-color: #444444;
         }
 
 		#myVideo {

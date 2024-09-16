@@ -10,7 +10,10 @@ def formulario_edit_conta(token, conta_selecionada):
         deposito_inicial = st.number_input('Depósito Inicial', value=conta_selecionada['deposito_inicial'], format="%.2f")
         saldo_atual = st.number_input('Saldo Atual', value=conta_selecionada['saldo_atual'], format="%.2f")
         saques = st.number_input('Saques', value=conta_selecionada['saques'], format="%.2f")
-        plano = st.selectbox('Plano', options=['Shrimp', 'Fish', 'Whale'], index=['Shrimp', 'Fish', 'Whale'].index(conta_selecionada['plano']))
+        planos = ['Shrimp', 'Fish', 'Whale']
+        if conta_selecionada['plano'] not in planos:
+            planos.append(conta_selecionada['plano'])
+        plano = st.selectbox('Plano', options=planos, index=planos.index(conta_selecionada['plano']))
         meses = st.selectbox('Meses', options=['Mensal', 'Trimestral', 'Anual'], index=['Mensal', 'Trimestral', 'Anual'].index(conta_selecionada['meses']))
         comissao = st.number_input('Comissão (%)', value=conta_selecionada['comissao'] * 100, format="%.2f")
 
@@ -51,16 +54,16 @@ def edit_conta_page(token, dados_contas):
         formulario_edit_conta(token, conta_selecionada)
         st.divider()
 
-        if 'confirmando_remocao' not in st.session_state:
-            st.session_state['confirmando_remocao'] = False
+        if 'confirmando_remocao_conta' not in st.session_state:
+            st.session_state['confirmando_remocao_conta'] = False
 
-        if not st.session_state['confirmando_remocao']:
+        if not st.session_state['confirmando_remocao_conta']:
             remove_conta_button = st.button("Remover Conta")
 
             if remove_conta_button:
-                st.session_state['confirmando_remocao'] = True
+                st.session_state['confirmando_remocao_conta'] = True
 
-        if st.session_state['confirmando_remocao']:
+        if st.session_state['confirmando_remocao_conta']:
             st.warning(f"Tem certeza que deseja remover esta conta?", icon="⚠️")
             col1, col2 = st.columns(2)
 
@@ -74,15 +77,15 @@ def edit_conta_page(token, dados_contas):
 
                 if "erro" not in resposta:
                     st.success("Conta removida com sucesso!")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_conta'] = False
                     dados_contas = api.get_contas(token)
                     df_contas = pd.DataFrame(dados_contas)
                     st.rerun()
                 else:
                     st.error(f"Erro: {resposta['erro']}")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_conta'] = False
 
             if cancelar_remocao_button:
                 st.info("A remoção foi cancelada.")
-                st.session_state['confirmando_remocao'] = False
+                st.session_state['confirmando_remocao_conta'] = False
                 st.rerun()

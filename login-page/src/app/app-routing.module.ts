@@ -1,10 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-
+import { EsqueciMinhaSenhaComponent } from './esqueci-minha-senha/esqueci-minha-senha.component';
+import { ResetarSenhaComponent } from './resetar-senha/resetar-senha.component';
 
 const routes: Routes = [
 {path: 'login', component: LoginComponent},
+{path: 'esqueci-minha-senha', component: EsqueciMinhaSenhaComponent},
+{path: 'resetar-senha/:token', component: ResetarSenhaComponent},
 {path: '', redirectTo: '/login', pathMatch: 'full'}
   
 ];

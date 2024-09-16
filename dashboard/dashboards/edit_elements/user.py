@@ -47,16 +47,16 @@ def edit_user_page(token, dados_usuario):
         formulario_edit_user(token, usuario_selecionado)
         st.divider()
         
-        if 'confirmando_remocao' not in st.session_state:
-            st.session_state['confirmando_remocao'] = False
+        if 'confirmando_remocao_user' not in st.session_state:
+            st.session_state['confirmando_remocao_user'] = False
     
-        if not st.session_state['confirmando_remocao']:
+        if not st.session_state['confirmando_remocao_user']:
             remove_user_button = st.button("Remover Usuário")
             
             if remove_user_button:
-                st.session_state['confirmando_remocao'] = True
+                st.session_state['confirmando_remocao_user'] = True
         
-        if st.session_state['confirmando_remocao']:
+        if st.session_state['confirmando_remocao_user']:
             st.warning(f"Tem certeza que deseja remover este usuário?", icon="⚠️")
             col1, col2 = st.columns(2)
             
@@ -70,15 +70,15 @@ def edit_user_page(token, dados_usuario):
 
                 if "erro" not in resposta:
                     st.success("Usuário removido com sucesso!")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_user'] = False
                     dados_usuario = api.getall_users(token)
                     df_usuarios = pd.DataFrame(dados_usuario)
                     st.rerun()
                 else:
                     st.error(f"Erro: {resposta['erro']}")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_user'] = False
             
             if cancelar_remocao_button:
                 st.info("A remoção foi cancelada.")
-                st.session_state['confirmando_remocao'] = False
+                st.session_state['confirmando_remocao_user'] = False
         

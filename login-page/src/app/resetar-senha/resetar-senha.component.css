@@ -1,94 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
-
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-}
-
-.video-background, #video-background {
+.video-background {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
+    width: 100%;
+    height: 100%;
     z-index: -1;
     overflow: hidden;
 }
 
+#video-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-/* Estilos para o container de login */
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
     height: 100vh;
-    overflow: hidden;
-    box-sizing: border-box;
     z-index: 1;
-    width: 100%;
 }
 
 .login-card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     background-color: rgb(51, 50, 50);
-    padding: 2rem; 
+    padding: 3rem;
     border-radius: 0.625rem;
     box-shadow: 0.5rem 1rem 2rem rgb(0, 0, 0);
-    width: 100%;
-    max-width: 600px; 
-    min-width: 15rem; 
+    width: 40vw;
+    max-width: 30rem;
+    min-width: 18rem;
     text-align: center;
+}
+
+.login-card__img {
+    border-radius: 10px;
+    padding: 10px;
+    width: 20vw;
     margin: 0 auto;
 }
 
-.login-card__img{
-    /* background-color: #33333a; */
-    width: 20vw;
-    max-width: 300px; /* Limite máximo para manter a logo em tamanho ideal */
-    min-width: 200px; /* Limite mínimo para manter a logo em tamanho ideal */
-    margin: 0 auto 1rem auto;
-}
-
-
 .login-header {
-    position: relative; 
+    position: relative;
     margin: 2rem 0;
 }
 
 .login-header::before {
     content: '';
     display: block;
-    width: 100%; 
+    width: 100%;
     height: 3px;
-    background-color: #202299; 
+    background-color: #202299;
     position: absolute;
     top: -20px;
-    left: 0%; 
+    left: 0%;
 }
 
 .login-title {
     color: white;
     font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 300;
-    font-size: 2rem; 
+    font-size: 2rem;
 }
 
-.login-paragraph{
+.login-paragraph {
     color: rgba(255, 246, 246, 0.5);
     font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 300;
 }
 
 .input-group {
-    margin-bottom: 1.2rem; 
+    margin-bottom: 1.2rem;
     margin-left: -1rem;
-    padding: 0 1.2rem; 
+    padding: 0 1.2rem;
 }
 
 label {
@@ -96,17 +83,17 @@ label {
     font-weight: 300;
     display: block;
     color: white;
-    font-size: 1rem; 
-    margin-bottom: 0.3rem; 
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
 }
 
 input {
     font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 300;
     width: 100%;
-    padding: 0.625rem; 
-    border: none;
-    border-radius: 0.3125rem; 
+    padding: 0.625rem;
+    border: 1px solid #484958;
+    border-radius: 0.3125rem;
     background-color: #333;
     color: white;
 }
@@ -117,18 +104,26 @@ input {
     color: red;
     margin-bottom: 1rem;
     font-weight: 300;
-  }
+}
+
+.confirmation-message {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 1rem;
+    color: green;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
 
 .btn-login {
-    padding: 0.625rem; 
+    padding: 0.625rem;
     background-color: #202299;
     color: white;
     border: none;
-    border-radius: 0.3125rem; 
+    border-radius: 0.3125rem;
     cursor: pointer;
-    font-size: 1rem; 
+    font-size: 1rem;
     font-weight: 600;
-    margin-top: 2rem; 
+    margin-top: 2rem;
     margin-left: -1rem;
     transition: background-color 0.3s;
 }
@@ -137,27 +132,18 @@ input {
     background-color: #ff8a00;
 }
 
-.forgot-password {
+.back-to-login {
     margin-top: 1rem;
     display: flex;
     justify-content: flex-end;
 }
-  
-.forgot-password a {
+
+.back-to-login a {
     color: white;
     text-decoration: underline;
     cursor: pointer;
 }
-  
-.forgot-password a:hover {
-    color: #ff8a00;
-}
 
-@media (max-width: 600px) {
-    .login-card {
-        padding: 1.5rem; 
-        width: 90%; 
-        max-width: none; 
-        min-width: auto;
-    }
+.back-to-login a:hover {
+    color: #ff8a00;
 }

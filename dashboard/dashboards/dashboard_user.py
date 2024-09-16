@@ -72,30 +72,30 @@ def dashboard_user(token):
     
     
         with col4:
-            st.metric(label="Depósito Inicial", value=f"R${deposito_inicial:,.2f}")
-            st.metric(label="Lucro Liquído", value=f"R${lucro_liquido:,.2f}")
-            st.metric(label="Saques", value=f"R${saques:,.2f}")
+            st.metric(label="Depósito Inicial", value=f"${deposito_inicial:,.2f}")
+            st.metric(label="Lucro Liquído", value=f"${lucro_liquido:,.2f}")
+            st.metric(label="Saques", value=f"${saques:,.2f}")
         with col5:
-            st.metric(label="Saldo Atual", value=f"R${saldo_atual:,.2f}")
-            st.metric(label="Operações Finalizadas", value=f"R${df_contas['operacoes_finalizadas'].values[0]:,.2f}")
-            st.metric(label="Comissão Fundo", value=f"R${comissao_fundo:,.2f}")
+            st.metric(label="Saldo Atual", value=f"${saldo_atual:,.2f}")
+            st.metric(label="Operações Finalizadas", value=f"${df_contas['operacoes_finalizadas'].values[0]:,.2f}")
+            st.metric(label="Comissão Fundo", value=f"${comissao_fundo:,.2f}")
     
         # Gráfico deposito_inicial e saldo_atual
         fig = px.bar(df_contas, 
                 x='nome', 
                 y=['deposito_inicial', 'saldo_atual'], 
                 barmode='group',
-                labels={'value': 'Valores em R$', 'variable': 'Tipo'},
+                labels={'value': 'Valores em $', 'variable': 'Tipo'},
                 title="Depósito Inicial vs. Saldo Atual")
         
         fig.update_layout(
             xaxis_title="Contas do Usuário",  
-            yaxis_title="Valores em Reais (R$)",  
+            yaxis_title="Valores ($)",  
         )
 
         st.plotly_chart(fig)
         
-        st.metric(label="Margem de Lucro", value=f"R${margem_lucro:,.2f}")
+        st.metric(label="Margem de Lucro", value=f"${margem_lucro:,.2f}")
             
         col6, col7 = st.columns(2)
         
@@ -128,7 +128,7 @@ def dashboard_user(token):
         fig = px.bar(df_long, 
                 y='nome', 
                 x='Valores', 
-                color='Tipo',  # Diferenciar pela coluna 'Tipo'
+                color='Tipo',  
                 title='Comissão Fundo e Lucro Líquido por Conta',
                 labels={'Valores': 'Valores', 'Tipo': 'Tipo'},
                 barmode='group',  

@@ -1,3 +1,29 @@
+/* O restante do seu CSS de login pode permanecer o mesmo */
+
+.confirmation-message {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 1rem;
+    color: green;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+.back-to-login {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.back-to-login a {
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.back-to-login a:hover {
+    color: #ff8a00;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 html, body {
@@ -105,7 +131,7 @@ input {
     font-weight: 300;
     width: 100%;
     padding: 0.625rem; 
-    border: none;
+    border: 1px solid #484958;
     border-radius: 0.3125rem; 
     background-color: #333;
     color: white;

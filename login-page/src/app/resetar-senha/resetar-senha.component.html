@@ -1,0 +1,33 @@
+<div class="video-background">
+    <video #videoBackground autoplay muted loop playsinline id="video-background">
+        <source src="assets/background-video.mp4" type="video/mp4">
+        Seu navegador não suporta vídeos HTML5.
+    </video>
+</div>
+
+<div class="login-container">
+    <div class="login-card">
+        <img class="login-card__img" src="assets/logo2.png" alt="Logo">
+        <div class="login-header">
+            <p class="login-paragraph">Insira sua nova senha</p>
+        </div>
+
+        <form (ngSubmit)="resetPassword()" autocomplete="off">
+            <div class="input-group">
+                <label for="new-password">Nova Senha</label>
+                <input type="password" id="new-password" name="new-password" [(ngModel)]="newPassword" required>
+            </div>
+            <div *ngIf="errorMessage" class="error-message">
+                {{ errorMessage }}
+            </div>
+            <div *ngIf="confirmationMessage" class="confirmation-message">
+                {{ confirmationMessage }}
+            </div>
+            <button type="submit" class="btn-login">Redefinir Senha</button>
+        </form>
+
+        <div class="back-to-login">
+            <a routerLink="/login">Voltar ao login</a>
+        </div>
+    </div>
+</div>

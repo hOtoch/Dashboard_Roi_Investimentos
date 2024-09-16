@@ -99,16 +99,16 @@ def edit_ciclomes_page(token, dados_ciclomes):
                 else:
                     st.error(f"Erro: {resposta['erro']}")
 
-        if 'confirmando_remocao' not in st.session_state:
-            st.session_state['confirmando_remocao'] = False
+        if 'confirmando_remocao_mes' not in st.session_state:
+            st.session_state['confirmando_remocao_mes'] = False
 
-        if not st.session_state['confirmando_remocao']:
+        if not st.session_state['confirmando_remocao_mes']:
             remove_ciclomes_button = st.button("Remover Mes")
 
             if remove_ciclomes_button:
-                st.session_state['confirmando_remocao'] = True
+                st.session_state['confirmando_remocao_mes'] = True
 
-        if st.session_state['confirmando_remocao']:
+        if st.session_state['confirmando_remocao_mes']:
             st.warning(f"Tem certeza que deseja remover este Mes?", icon="⚠️")
             col1, col2 = st.columns(2)
 
@@ -122,16 +122,16 @@ def edit_ciclomes_page(token, dados_ciclomes):
 
                 if "erro" not in resposta:
                     st.success("CicloMes removido com sucesso!")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_mes'] = False
                     dados_ciclomes = api.get_ciclomeses(token)
                     df_ciclomes = pd.DataFrame(dados_ciclomes)
                     st.rerun()
                 else:
                     st.error(f"Erro: {resposta['erro']}")
-                    st.session_state['confirmando_remocao'] = False
+                    st.session_state['confirmando_remocao_mes'] = False
 
             if cancelar_remocao_button:
                 st.info("A remoção foi cancelada.")
-                st.session_state['confirmando_remocao'] = False
+                st.session_state['confirmando_remocao_mes'] = False
                 st.rerun()
                 
