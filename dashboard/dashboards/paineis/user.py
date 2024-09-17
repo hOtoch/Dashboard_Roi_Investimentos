@@ -3,6 +3,11 @@ import pandas as pd
 
 
 def exibir_tabela_usuarios(token, dados_usuario):
+    
+    if not dados_usuario:
+        st.warning("Nenhum usuário cadastrado.")
+        return
+    
     df_usuarios = pd.DataFrame(dados_usuario)
     
     # Exibe a tabela de usuários no Streamlit

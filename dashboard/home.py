@@ -77,8 +77,13 @@ def get_params():
 def dashboard_padrao(token, dados_ciclomeses):
     
     st.title("Dashboard Inicial")
+    
+    if not dados_ciclomeses:
+        st.info("Não há dados de meses disponíveis para exibir.")
+        return
 
     df_ciclomeses = pd.DataFrame(dados_ciclomeses)
+    
 
     df_ciclomeses['mes_ano'] = df_ciclomeses['nome'] + ' de ' + df_ciclomeses['ano'].astype(str)
     df_ciclomeses = df_ciclomeses.sort_values(by="id", ascending=True)
@@ -171,8 +176,7 @@ def main():
     video_html = """
     
         <video autoplay muted loop id="myVideo">
-        
-		  <source src="https://www.youtube.com/embed/Ejirpx_qQtc">
+		  <source src="https://videos.pexels.com/video-files/28464229/12391209_1920_1080_30fps.mp4">
 		  Your browser does not support HTML5 video.
 		</video>
 		<style>
@@ -182,6 +186,18 @@ def main():
         }
         [data-testid="stSidebarContent"]{
             background-color: #444444;
+            color: white;
+        }
+        
+        [data-testid="stMetricValue"] {
+            background-color: white;
+            border-radius: 10px;
+            padding: 0px;
+        }
+
+        
+        [data-testid="stHeadingWithActionElements"] h1{
+            color: black;
         }
 
 		#myVideo {

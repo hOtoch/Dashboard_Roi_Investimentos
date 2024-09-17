@@ -1,8 +1,8 @@
 flask
-streamlit
 python-dotenv
 Flask-SQLAlchemy
 Werkzeug
 Flask-JWT-Extended
 flask-cors
 Flask-Mail
+gunicorn

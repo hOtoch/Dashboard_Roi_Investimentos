@@ -1,5 +1,5 @@
 [theme]
 primaryColor = "#1f77b4"  # Azul para destaques e botões
-backgroundColor = "#1e2024"  # Cinza escuro para o fundo
-secondaryBackgroundColor = "#444444"  # Cinza médio para áreas secundárias
-textColor = "#FFFFFF"  # Branco para o texto
+backgroundColor = "#696969"  # Cinza escuro para o fundo
+secondaryBackgroundColor = "#696969"  # Cinza médio para áreas secundárias
+textColor = "#000000"  

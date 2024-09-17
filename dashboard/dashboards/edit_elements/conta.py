@@ -40,6 +40,10 @@ def formulario_edit_conta(token, conta_selecionada):
     return False
 
 def edit_conta_page(token, dados_contas):
+    
+    if not dados_contas:
+        st.warning("Nenhuma conta cadastrada.")
+        return
    
     df_contas = pd.DataFrame(dados_contas)
 

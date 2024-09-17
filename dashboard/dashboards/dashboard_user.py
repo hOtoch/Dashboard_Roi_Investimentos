@@ -9,6 +9,11 @@ def dashboard_user(token):
     
     if st.session_state['admin']:
         dados_usuario = api.getall_users(token)
+        
+        if not dados_usuario:
+            st.warning("Nenhum usuário cadastrado.")
+            return
+        
         # st.write(dados_usuario)
         df_usuarios = pd.DataFrame(dados_usuario)
         
@@ -19,6 +24,10 @@ def dashboard_user(token):
         dados_contas = api.listar_contas_user_admin(token, usuario_selecionado['id'])
     else:
         dados_contas = api.listar_contas_user(token)
+        
+        if not dados_contas:
+            st.warning("Nenhuma conta encontrada para este usuário")
+            return
     
     if dados_contas:
     

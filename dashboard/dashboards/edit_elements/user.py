@@ -31,17 +31,17 @@ def formulario_edit_user(token, usuario_selecionado):
     return False
 
 def edit_user_page(token, dados_usuario):
-    # DataFrame dos usuários
+    
+    if not dados_usuario:
+        st.warning("Nenhum usuário cadastrado.")
+        return
+    
     df_usuarios = pd.DataFrame(dados_usuario)
-
-    # Selectbox para selecionar o usuário a ser editado
     nomes_usuarios = df_usuarios['nome'].values
     usuario_selecionado_nome = st.selectbox("Selecione um usuário para editar", options=nomes_usuarios)
 
-    # Filtra o DataFrame para encontrar o usuário selecionado
     usuario_selecionado = df_usuarios[df_usuarios['nome'] == usuario_selecionado_nome].iloc[0]
 
-    # Exibe o formulário para edição do usuário selecionado
     if usuario_selecionado is not None:
         st.divider()
         formulario_edit_user(token, usuario_selecionado)

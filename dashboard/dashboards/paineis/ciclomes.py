@@ -3,6 +3,11 @@ import pandas as pd
 import api
 
 def exibir_tabela_ciclomes(token,dados_ciclomes):
+    
+    if not dados_ciclomes:
+        st.warning("Nenhum Mes cadastrado.")
+        return
+    
     df_ciclomes = pd.DataFrame(dados_ciclomes)
 
     st.title("Tabela de Meses")

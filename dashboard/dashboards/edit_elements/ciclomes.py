@@ -58,6 +58,10 @@ def formulario_edit_dia(token, dia_selecionado):
             st.error(f"Erro ao atualizar o dia, error: {resposta['erro']}")
             
 def edit_ciclomes_page(token, dados_ciclomes):
+    
+    if not dados_ciclomes:
+        st.warning("Nenhum Mês cadastrado.")
+        return
 
     df_ciclomes = pd.DataFrame(dados_ciclomes)
 

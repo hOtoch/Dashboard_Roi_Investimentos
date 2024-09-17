@@ -3,6 +3,14 @@ import pandas as pd
 import api
 
 def exibir_tabela_contas(token, dados_contas, dados_usuario):
+    
+    if not dados_usuario:
+        st.warning("Nenhum usuário cadastrado.")
+        return
+    
+    if not dados_contas:
+        st.warning("Nenhuma conta cadastrada.")
+        return
 
     df_contas = pd.DataFrame(dados_contas)
     df_usuarios = pd.DataFrame(dados_usuario)
