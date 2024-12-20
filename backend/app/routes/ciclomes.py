@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+﻿from flask import Blueprint, jsonify, request
 from ..models import CicloMes,Usuario,Dia, db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..routes.contas import atualizar_todas_contas
@@ -56,7 +56,7 @@ def criar_dias(ciclomes):
     return "Dias criados"
 
 
-@ciclomes_bp.route('/ciclomes', methods=['POST'])
+@ciclomes_bp.route('/api/ciclomes', methods=['POST'])
 @jwt_required()
 def criar_ciclomes():
     dados = request.json
@@ -111,7 +111,7 @@ def criar_ciclomes():
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
     
-@ciclomes_bp.route('/ciclomes/<int:id>', methods=['GET'])
+@ciclomes_bp.route('/api/ciclomes/<int:id>', methods=['GET'])
 @jwt_required()
 def acessar_ciclomes(id):
     # Buscar o CicloMes pelo ID
@@ -136,7 +136,7 @@ def acessar_ciclomes(id):
     }), 200
 
 
-@ciclomes_bp.route('/ciclomes/<int:id>', methods=['PUT'])
+@ciclomes_bp.route('/api/ciclomes/<int:id>', methods=['PUT'])
 @jwt_required()
 def editar_ciclomes(id):
     
@@ -182,7 +182,7 @@ def editar_ciclomes(id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
     
-@ciclomes_bp.route('/ciclomes/ativar/<int:id>', methods=['PUT'])
+@ciclomes_bp.route('/api/ciclomes/ativar/<int:id>', methods=['PUT'])
 @jwt_required()
 def ativar_ciclomes(id):
     usuario_id_logado = get_jwt_identity()
@@ -219,7 +219,7 @@ def ativar_ciclomes(id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
     
-@ciclomes_bp.route('/ciclomes/<int:id>', methods=['DELETE'])
+@ciclomes_bp.route('/api/ciclomes/<int:id>', methods=['DELETE'])
 @jwt_required()
 def deletar_ciclomes(id):
     usuario_id_logado = get_jwt_identity()
@@ -239,7 +239,7 @@ def deletar_ciclomes(id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
     
-@ciclomes_bp.route('/ciclomes', methods=['GET'])
+@ciclomes_bp.route('/api/ciclomes', methods=['GET'])
 @jwt_required()
 def get_all_ciclomes():
     ciclomeses = CicloMes.query.all()

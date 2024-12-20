@@ -1,12 +1,13 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity
+﻿from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, request, jsonify
 from ..models import Dia, Usuario,CicloMes, db
 from ..routes.ciclomes import atualizar_ciclomes
+from ..routes.contas import atualizar_todas_contas
 
 dias_bp = Blueprint('dias', __name__)
 
 
-@dias_bp.route('/dias/<int:id>', methods=['PUT'])
+@dias_bp.route('/api/dias/<int:id>', methods=['PUT'])
 @jwt_required()  
 def editar_dia(id):
     usuario_id = get_jwt_identity()
@@ -26,6 +27,8 @@ def editar_dia(id):
         dia.alcancado_dia = dados['alcancado_dia']
         
     atualizar_ciclomes(dia.mes_id)
+    ciclomes = CicloMes.query.get_or_404(dia.mes_id)
+    atualizar_todas_contas(ciclomes)
 
     try:
         db.session.commit()
@@ -36,7 +39,7 @@ def editar_dia(id):
         return jsonify({'erro': str(e)}), 500
 
 
-@dias_bp.route('/dias/<int:id>', methods=['GET'])
+@dias_bp.route('/api/dias/<int:id>', methods=['GET'])
 @jwt_required()  
 def acessar_dias_mes(id):
     

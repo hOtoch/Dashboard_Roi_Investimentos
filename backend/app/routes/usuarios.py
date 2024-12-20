@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+﻿from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models import Usuario, db
@@ -6,7 +6,7 @@ from ..models import Usuario, db
 # Definir o blueprint para rotas de usuários
 usuarios_bp = Blueprint('usuarios', __name__)
 
-@usuarios_bp.route('/usuarios', methods=['GET'])
+@usuarios_bp.route('/api/usuarios', methods=['GET'])
 @jwt_required()
 def listar_usuarios():
     
@@ -26,7 +26,7 @@ def listar_usuarios():
     } for usuario in usuarios])
     
 
-@usuarios_bp.route('/usuarios', methods=['POST'])
+@usuarios_bp.route('/api/usuarios', methods=['POST'])
 @jwt_required()
 def criar_usuario():
     usuario_id = get_jwt_identity()
@@ -68,7 +68,7 @@ def criar_usuario():
         return jsonify({'erro': str(e)}), 500
 
 
-@usuarios_bp.route('/usuarios/<int:id>', methods=['GET'])
+@usuarios_bp.route('/api/usuarios/<int:id>', methods=['GET'])
 @jwt_required()
 def buscar_usuario(id):
     usuario_logado_id = get_jwt_identity()
@@ -88,7 +88,7 @@ def buscar_usuario(id):
     })
     
     
-@usuarios_bp.route('/usuarios/<int:id>', methods=['PUT'])
+@usuarios_bp.route('/api/usuarios/<int:id>', methods=['PUT'])
 @jwt_required()
 def atualizar_usuario(id):
     usuario_logado_id = get_jwt_identity()
@@ -111,6 +111,9 @@ def atualizar_usuario(id):
     if dados.get('senha'):
         usuario.senha_hash = generate_password_hash(str(dados['senha']))
 
+    if dados.get('tipo_usuario'):
+        usuario.tipo_usuario = dados['tipo_usuario']
+
     db.session.commit()
 
     return jsonify({
@@ -121,7 +124,7 @@ def atualizar_usuario(id):
     }), 200
 
     
-@usuarios_bp.route('/usuarios/<int:id>', methods=['DELETE'])
+@usuarios_bp.route('/api/usuarios/<int:id>', methods=['DELETE'])
 @jwt_required()
 def deletar_usuario(id):
     usuario_logado_id = get_jwt_identity()

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+﻿from flask import Blueprint, jsonify, request
 from ..models import Conta,CicloMes,Usuario, db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -25,6 +25,9 @@ def aplicar_regras_negocio(conta, mes_atual=None):
     conta.comissao_fundo = conta.margem_lucro * (conta.comissao)
 
     conta.liquido = conta.margem_lucro - conta.comissao_fundo
+
+	
+ 
     
 def atualizar_todas_contas(ciclo_mes):
     # Buscar todas as contas do sistema
@@ -38,22 +41,22 @@ def atualizar_todas_contas(ciclo_mes):
     db.session.commit()
 
 
-@contas_bp.route('/contas', methods=['POST'])
+@contas_bp.route('/api/contas', methods=['POST'])
 @jwt_required()
 def criar_conta():
     
     usuario_logado_id = get_jwt_identity()
     usuario = Usuario.query.get(usuario_logado_id)
+
     
     if usuario.tipo_usuario != 'admin':
         return jsonify({'erro': 'Apenas usuarios permitidos podem criar contas'})
-    
-    
+
     dados = request.json
 
-    # Validação básica dos campos obrigatórios
-    if not dados.get('deposito_inicial') or not dados.get('saldo_atual') or not dados.get('plano') or not dados.get('meses') or not dados.get('comissao') or not dados.get('nome') or not dados.get('usuario_id'):
-        return jsonify({'erro': 'Necessário dados obrigatórios'}), 400
+    if not dados.get('plano') or not dados.get('meses') or not dados.get('comissao') or not dados.get('nome') or not dados.get('usuario_id'):
+       return jsonify({'erro': 'Necessário dados obrigatórios'}), 400
+    
     
     try:
         nova_conta = Conta(
@@ -63,7 +66,8 @@ def criar_conta():
             saldo_atual=dados['saldo_atual'],
             plano=dados['plano'],
             meses=dados['meses'],
-            comissao=dados['comissao']
+            comissao=dados['comissao'],
+	    saques = dados['saques']
         )
         
         aplicar_regras_negocio(nova_conta)
@@ -77,7 +81,7 @@ def criar_conta():
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
-@contas_bp.route('/contas/user', methods=['GET'])
+@contas_bp.route('/api/contas/user', methods=['GET'])
 @jwt_required()
 def listar_minhas_contas():
     
@@ -103,7 +107,7 @@ def listar_minhas_contas():
         'saques': conta.saques
     } for conta in contas]), 200
     
-@contas_bp.route('/contas/user/<int:id>', methods=['GET'])
+@contas_bp.route('/api/contas/user/<int:id>', methods=['GET'])
 @jwt_required()
 def listar_contas_usuario(id):
     
@@ -133,7 +137,7 @@ def listar_contas_usuario(id):
         'saques': conta.saques
     } for conta in contas]), 200
     
-@contas_bp.route('/contas', methods=['GET'])
+@contas_bp.route('/api/contas', methods=['GET'])
 @jwt_required()
 def get_all_contas(): 
     contas = Conta.query.all()
@@ -156,7 +160,7 @@ def get_all_contas():
         'saques': conta.saques
     } for conta in contas]), 200
     
-@contas_bp.route('/contas/<int:id>', methods=['GET'])
+@contas_bp.route('/api/contas/<int:id>', methods=['GET'])
 @jwt_required()
 def get_conta(id):
     usuario_id_logado = get_jwt_identity()
@@ -185,7 +189,7 @@ def get_conta(id):
     }])
 
 
-@contas_bp.route('/contas/<int:id>', methods=['PUT'])
+@contas_bp.route('/api/contas/<int:id>', methods=['PUT'])
 @jwt_required()
 def editar_conta(id):
     dados = request.json
@@ -212,6 +216,7 @@ def editar_conta(id):
         if 'comissao' in dados:
             conta.comissao = dados['comissao']
         if 'saques' in dados:
+            conta.saldo_atual = conta.saldo_atual + conta.saques
             conta.saques = dados['saques']
         if 'nome' in dados:
             conta.nome = dados['nome']
@@ -225,7 +230,7 @@ def editar_conta(id):
         return jsonify({'erro': str(e)}), 500
 
 
-@contas_bp.route('/contas/<int:id>', methods=['DELETE'])
+@contas_bp.route('/api/contas/<int:id>', methods=['DELETE'])
 @jwt_required()
 def excluir_conta(id):
     

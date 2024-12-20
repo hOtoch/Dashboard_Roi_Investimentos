@@ -1,6 +1,6 @@
-import requests
+﻿import requests
 
-BACKEND_URL = 'http://localhost:5000'
+BACKEND_URL = 'https://dashboard.roiinvestimentos.com/api'
 
 def get_user(token, user_id):
     headers = {'Authorization':f'Bearer {token}'}

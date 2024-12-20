@@ -1,4 +1,4 @@
-from flask import Flask
+﻿from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
@@ -6,21 +6,27 @@ import os
 from datetime import timedelta
 from flask_mail import Mail
 
+
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
-mail = Mail()
+
 
 # Inicializar SQLAlchemy
 db = SQLAlchemy()
 
 jwt = JWTManager()
 
+mail = Mail()
+
 def create_app():
     app = Flask(__name__)
+    app.secret_key = os.getenv('FLASK_SECRET_KEY')
+ 
     
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_SERVER'] = 'smtp.hostinger.com'
     app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_TLS'] = True 
+    app.config['MAIL_USE_SSL'] = False
     app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
@@ -38,6 +44,8 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
+    
+ 
     
     from .routes import register_blueprints
     register_blueprints(app)

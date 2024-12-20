@@ -1,23 +1,41 @@
-from flask import Blueprint, request, jsonify, make_response, Flask,url_for
+﻿from flask import Blueprint, request, jsonify, make_response
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_jwt_extended import create_access_token, decode_token
 from ..models import Usuario, db
 from flask_mail import Message
 from datetime import timedelta
+from io import BytesIO
+import pyotp
+import qrcode
+import base64
 from .. import mail
 
 
 def send_reset_email(to, reset_link):
-    msg = Message('Redefinição de Senha',
+    msg = Message('ROI Investimentos - Instruções para Recuperação de Senha',
                   recipients=[to],
-                  body=f'Clique no link para redefinir sua senha: {reset_link}',
-                  sender='otochdev@gmail.com')
+                  body=f'''Olá,
+
+Recebemos uma solicitação para redefinir a senha associada à sua conta na ROI Investimentos.
+
+Para criar uma nova senha, por favor, clique no link abaixo:
+
+{reset_link}
+
+Este link estará disponível por 24 horas. Se você não solicitou a recuperação de senha, pode ignorar esta mensagem com segurança.
+
+Caso tenha qualquer dúvida, nossa equipe de suporte está à disposição para ajudá-lo.
+
+Atenciosamente,
+Equipe ROI Investimentos''',
+                  sender='suporte@roiinvestimentos.com')
     mail.send(msg)
     
-    
+
 login_bp = Blueprint('login',__name__)
 
-@login_bp.route('/login', methods =['POST'])
+
+@login_bp.route('/api/login', methods =['POST'])
 def login():
     dados = request.get_json()
 
@@ -40,7 +58,7 @@ def login():
         return jsonify({'erro':'Credenciais inválidas'}), 401
     
 
-@login_bp.route('/verify_email', methods =['POST'])    
+@login_bp.route('/api/verify_email', methods =['POST'])    
 def verify_email():
     dados = request.get_json()
     
@@ -51,7 +69,7 @@ def verify_email():
     else:
         return jsonify({'erro':'Email não encontrado'}), 404
     
-@login_bp.route('/forgot-password', methods=['POST'])
+@login_bp.route('/api/forgot-password', methods=['POST'])
 def forgot_password():
     dados = request.get_json()
 
@@ -66,17 +84,17 @@ def forgot_password():
         # Gera o token de redefinição de senha (JWT válido por 1 hora)
         reset_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
 
-        frontend_url = "http://localhost:4200/resetar-senha"  
+        frontend_url = "https://roiinvestimentos.com/resetar-senha"  
         reset_url = f"{frontend_url}/{reset_token}"
 
         # Envia o email com o link de redefinição
         send_reset_email(user.email, reset_url)
-
+ 
         return jsonify({'message': 'Um email foi enviado com instruções para redefinir sua senha.'}), 200
     else:
         return jsonify({'erro': 'Email não encontrado'}), 404
     
-@login_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+@login_bp.route('/api/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     try:
         # Decodificar o token para obter o ID do usuário
@@ -101,6 +119,63 @@ def reset_password(token):
 
     # Se for uma requisição GET, você pode retornar uma mensagem ou renderizar um formulário (caso queira exibir uma página)
     return jsonify({'message': 'Insira sua nova senha.'}), 200
+
+@login_bp.route('/api/authenticator/setup', methods=['POST'])
+def setup():
+    email = request.json.get('email')
+    
+    user = Usuario.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify({'erro':'Usuário não encontrado'}),404
+    
+    if user.authenticated:
+        return jsonify({'message':'Authenticator já configurado'}),200
+    
+    # cria um segredo unico
+    secret = pyotp.random_base32()
+    
+    user.authenticator_secret = secret
+    
+    totp = pyotp.TOTP(secret)
+    
+    # cria a URL para ser autenticada no Google Authenticator
+    otp_uri = totp.provisioning_uri(name=email, issuer_name='ROI Investimentos')
+    
+    qr_code = qrcode.make(otp_uri)
+    buffered = BytesIO()
+    qr_code.save(buffered, format='PNG')
+    
+    qr_code_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    
+    db.session.commit()
+  
+    
+    return jsonify({
+        'secret': secret,
+        'qr_code': qr_code_base64,
+        'message':f'QR Code gerado para o usuário {email}'
+    }), 200
+    
+@login_bp.route('/api/authenticator/verify', methods=['POST'])
+def verify():
+    email = request.json.get('email')
+    user_code = request.json.get('user_code')
+    
+    user = Usuario.query.filter_by(email=email).first()
+    
+    secret = user.authenticator_secret 
+    
+    totp = pyotp.TOTP(secret)
+   
+    
+    
+    if totp.verify(user_code):
+        user.authenticated = True
+        db.session.commit()
+        return jsonify({'message':'Código válido, login bem-sucedido!'}), 200
+    else:
+        return jsonify({'erro':'Código inválido'}), 400
 
 
 

@@ -1,21 +1,22 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { LoginResponse } from './models/login-response.model';
+import { AuthenticatorResponse } from './models/login-response.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000';  // URL da API Flask
+  private apiUrl = 'https://roiinvestimentos.com';  // URL da API Flask
   private tokenKey = 'token';  
   private userIdKey = 'userId';  
 
   constructor(private http: HttpClient) {}
 
   login(data: { email: string; senha: string }): Observable<LoginResponse> {
-    const url = `${this.apiUrl}/login`;
+    const url = `${this.apiUrl}/api/login`;
     return this.http.post<LoginResponse>(url, data).pipe(
       tap((response: LoginResponse) => {
         localStorage.setItem(this.tokenKey, response.access_token);
@@ -23,13 +24,26 @@ export class AuthService {
     );
   }
 
+  setupAuthenticator(email: string): Observable<AuthenticatorResponse> {
+    const url = `${this.apiUrl}/api/authenticator/setup`;
+    return this.http.post<AuthenticatorResponse>(url, {'email': email});
+  }
+
+  verifyAuthenticator(email: string, user_code: string): Observable<{ message: string }> {
+    const url = `${this.apiUrl}/api/authenticator/verify`;
+    return this.http.post<{ message: string }>(url, { email, user_code });
+  }
+
+
+
+
   verificaEmail(email: string): Observable<{ message: string }> {
-    const url = `${this.apiUrl}/verify_email`;
+    const url = `${this.apiUrl}/api/verify_email`;
     return this.http.post<{ message: string }>(url, { email });
   }
 
   forgotPassword(email: string): Observable<{ message: string }> {
-    const url = `${this.apiUrl}/forgot-password`;
+    const url = `${this.apiUrl}/api/forgot-password`;
     return this.http.post<{ message: string }>(url, { email }).pipe(
       tap((response) => {
         console.log('Resposta do servidor:', response);
@@ -39,7 +53,7 @@ export class AuthService {
   }
 
   resetPassword(token: string, newPassword: string): Observable<any> {
-    const url = `${this.apiUrl}/reset-password/${token}`;  
+    const url = `${this.apiUrl}/api/reset-password/${token}`;  
     const body = { new_password: newPassword }; 
 
     return this.http.post(url, body);  
